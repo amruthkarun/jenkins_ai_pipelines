@@ -14,7 +14,7 @@ pipeline {
         }
         stage('install packages') {
             steps {
-                sh 'python3 -m pip install --user --upgrade pip'
+                sh 'conda create -m python=3.9'
                 sh 'make clean'
                 sh 'pip install -r requirements.txt'
             }
