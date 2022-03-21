@@ -15,7 +15,6 @@ pipeline {
         stage('install packages') {
             steps {
                 sh 'make clean'
-                sudo apt-get -y install python3-pip
                 sh 'pip install -r requirements.txt'
             }
         }
