@@ -14,6 +14,7 @@ pipeline {
         }
         stage('install packages') {
             steps {
+                sh 'conda activate'
                 sh 'make clean'
                 sh 'pip install -r requirements.txt'
             }
