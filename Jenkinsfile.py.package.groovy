@@ -14,25 +14,33 @@ pipeline {
         }
         stage('install packages') {
             steps {
-                sh 'conda create -m python=3.9'
-                sh 'make clean'
-                sh 'pip install -r requirements.txt'
+                withPythonEnv('python3') {
+                    sh 'python3 -m pip install --user --upgrade pip'
+                    sh 'make clean'
+                    sh 'pip install -r requirements.txt'
+                }
             }
         }
         stage('Python lint') {
             steps {
+                withPythonEnv('python3') {
                 sh 'make lint'
+                }
             }
         }
         stage('Test & Coverage') {
             steps {
-                sh 'make test'
-                sh 'make coverage'
+                withPythonEnv('python3') {
+                    sh 'make test'
+                    sh 'make coverage'
+                }
             }
         }
         stage('build package') {
             steps {
-                sh 'make dist'
+                withPythonEnv('python3') {
+                    sh 'make dist'
+                }
             }
         }
 //     Set up the environment for twine upload artifacts, please read https://twine.readthedocs.io/en/stable/
@@ -41,16 +49,13 @@ pipeline {
                 TWINE_REPOSITORY_URL = "${params.nexus_py_repository_url}"
             }
             steps {
-                withCredentials([usernamePassword(credentialsId: "${params.nexus_credential}", usernameVariable: 'TWINE_USERNAME', passwordVariable: 'TWINE_PASSWORD')]) {
-                    echo "${TWINE_REPOSITORY_URL}"
-                    echo "${TWINE_USERNAME}"
-                    sh 'make release'
-                    sh 'make clean'
-
-                }
-                withCredentials([usernamePassword(credentialsId: "${params.github_token}", passwordVariable: 'GIT_TOKEN')]) {
-                    echo "${GIT_TOKEN}"
-//                    sh('git push https://${GIT_TOKEN}@github.com/my-org/my-repo.git')
+                withPythonEnv('python3') {
+                    withCredentials([usernamePassword(credentialsId: "${params.nexus_credential}", usernameVariable: 'TWINE_USERNAME', passwordVariable: 'TWINE_PASSWORD')]) {
+                        echo "${TWINE_REPOSITORY_URL}"
+                        echo "${TWINE_USERNAME}"
+                        sh 'make release'
+                        sh 'make clean'
+                    }
                 }
             }
         }
