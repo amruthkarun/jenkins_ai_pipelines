@@ -14,6 +14,7 @@ pipeline {
         }
         stage('install packages') {
             steps {
+                sh 'python3 -m pip install --user --upgrade pip'
                 sh 'make clean'
                 sh 'pip install -r requirements.txt'
             }
