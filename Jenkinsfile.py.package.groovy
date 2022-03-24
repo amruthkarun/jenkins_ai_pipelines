@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    environment{
+        PATH = "$PATH:/home/jenkins/.local/bin"
+    }
+    agent {
+        label 'python'
+    }
     stages {
         stage('Check Condition') {
             steps {
